@@ -435,10 +435,11 @@ public class ClientConnector extends ContainerLifeCycle implements IClientConnec
         }
     }
 
-    public void accept(SocketChannel channel, Map<String, Object> context)
+    public void accept(SelectableChannel selectable, Map<String, Object> context)
     {
         try
         {
+            SocketChannel channel = (SocketChannel)selectable;
             context.put(ClientConnector.CLIENT_CONNECTOR_CONTEXT_KEY, this);
             if (!channel.isConnected())
                 throw new IllegalStateException("SocketChannel must be connected");
@@ -464,8 +465,9 @@ public class ClientConnector extends ContainerLifeCycle implements IClientConnec
         channel.bind(bindAddress);
     }
 
-    protected void configure(SocketChannel channel) throws IOException
+    protected void configure(SelectableChannel selectable) throws IOException
     {
+        SocketChannel channel = (SocketChannel)selectable;
         setSocketOption(channel, StandardSocketOptions.TCP_NODELAY, isTCPNoDelay());
         setSocketOption(channel, StandardSocketOptions.SO_REUSEADDR, getReuseAddress());
         setSocketOption(channel, StandardSocketOptions.SO_REUSEPORT, isReusePort());
@@ -490,9 +492,9 @@ public class ClientConnector extends ContainerLifeCycle implements IClientConnec
         }
     }
 
-    protected EndPoint newEndPoint(SocketChannel channel, ManagedSelector selector, SelectionKey selectionKey)
+    protected EndPoint newEndPoint(SelectableChannel selectable, ManagedSelector selector, SelectionKey selectionKey)
     {
-        return new SocketChannelEndPoint(channel, selector, selectionKey, getScheduler());
+        return new SocketChannelEndPoint((SocketChannel)selectable, selector, selectionKey, getScheduler());
     }
 
     protected void connectFailed(Throwable failure, Map<String, Object> context)
