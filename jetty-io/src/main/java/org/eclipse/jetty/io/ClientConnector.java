@@ -70,7 +70,7 @@ import org.slf4j.LoggerFactory;
  * </pre>
  */
 @ManagedObject
-public class ClientConnector extends ContainerLifeCycle implements IClientConnector
+public class ClientConnector extends ContainerLifeCycle
 {
     public static final String CLIENT_CONNECTOR_CONTEXT_KEY = "org.eclipse.jetty.client.connector";
     public static final String REMOTE_SOCKET_ADDRESS_CONTEXT_KEY = CLIENT_CONNECTOR_CONTEXT_KEY + ".remoteSocketAddress";
@@ -119,6 +119,11 @@ public class ClientConnector extends ContainerLifeCycle implements IClientConnec
     public Executor getExecutor()
     {
         return executor;
+    }
+
+    public boolean isIntrinsicallySecure()
+    {
+        return false;
     }
 
     public void setExecutor(Executor executor)
@@ -450,8 +455,8 @@ public class ClientConnector extends ContainerLifeCycle implements IClientConnec
         catch (Throwable failure)
         {
             if (LOG.isDebugEnabled())
-                LOG.debug("Could not accept {}", channel);
-            IO.close(channel);
+                LOG.debug("Could not accept {}", selectable);
+            IO.close(selectable);
             Promise<?> promise = (Promise<?>)context.get(CONNECTION_PROMISE_CONTEXT_KEY);
             if (promise != null)
                 promise.failed(failure);
