@@ -521,7 +521,7 @@ public class ClientConnector extends ContainerLifeCycle
         @Override
         protected EndPoint newEndPoint(SelectableChannel channel, ManagedSelector selector, SelectionKey selectionKey)
         {
-            EndPoint endPoint = ClientConnector.this.newEndPoint((SocketChannel)channel, selector, selectionKey);
+            EndPoint endPoint = ClientConnector.this.newEndPoint(channel, selector, selectionKey);
             endPoint.setIdleTimeout(getIdleTimeout().toMillis());
             return endPoint;
         }
