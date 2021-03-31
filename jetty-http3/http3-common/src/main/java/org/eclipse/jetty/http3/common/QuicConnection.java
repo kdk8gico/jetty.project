@@ -121,9 +121,21 @@ public abstract class QuicConnection extends AbstractConnection
                 QuicSession session = sessions.get(quicheConnectionId);
                 if (session == null)
                 {
+                    if (LOG.isDebugEnabled())
+                        LOG.debug("packet is for unknown session, trying to create a new one");
                     session = createSession(remoteAddress, cipherBuffer);
-                    if (session != null && promoteSession(quicheConnectionId, session))
+                    if (session != null)
+                    {
+                        if (LOG.isDebugEnabled())
+                            LOG.debug("session created");
+                        session.setConnectionId(quicheConnectionId);
                         sessions.put(quicheConnectionId, session);
+                    }
+                    else
+                    {
+                        if (LOG.isDebugEnabled())
+                            LOG.debug("session not created");
+                    }
                     continue;
                 }
 
@@ -140,8 +152,6 @@ public abstract class QuicConnection extends AbstractConnection
     }
 
     protected abstract QuicSession createSession(InetSocketAddress remoteAddress, ByteBuffer cipherBuffer) throws IOException;
-
-    protected abstract boolean promoteSession(QuicheConnectionId quicheConnectionId, QuicSession session);
 
     public void write(Callback callback, InetSocketAddress remoteAddress, ByteBuffer... buffers)
     {

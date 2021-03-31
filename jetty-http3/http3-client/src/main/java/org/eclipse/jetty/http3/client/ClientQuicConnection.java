@@ -107,21 +107,18 @@ public class ClientQuicConnection extends QuicConnection
     {
         QuicSession session = pendingSessions.get(remoteAddress);
         if (session != null)
-            session.process(remoteAddress, cipherBuffer);
-        return session;
-    }
-
-    @Override
-    protected boolean promoteSession(QuicheConnectionId quicheConnectionId, QuicSession session)
-    {
-        InetSocketAddress remoteAddress = session.getRemoteAddress();
-        if (pendingSessions.containsKey(remoteAddress) && session.isConnectionEstablished())
         {
-            pendingSessions.remove(remoteAddress);
-            session.setConnectionId(quicheConnectionId);
-            session.createStream(0); // TODO perform proper stream ID generation
-            return true;
+            session.process(remoteAddress, cipherBuffer);
+            if (session.isConnectionEstablished())
+            {
+                pendingSessions.remove(remoteAddress);
+                session.createStream(0); // TODO perform proper stream ID generation
+            }
+            else
+            {
+                session = null;
+            }
         }
-        return false;
+        return session;
     }
 }

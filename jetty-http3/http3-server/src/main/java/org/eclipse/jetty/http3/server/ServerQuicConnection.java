@@ -87,11 +87,4 @@ public class ServerQuicConnection extends QuicConnection
             return session;
         }
     }
-
-    @Override
-    protected boolean promoteSession(QuicheConnectionId quicheConnectionId, QuicSession session)
-    {
-        session.setConnectionId(quicheConnectionId);
-        return true;
-    }
 }
