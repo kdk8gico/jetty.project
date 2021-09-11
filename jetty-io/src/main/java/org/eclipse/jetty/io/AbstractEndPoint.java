@@ -460,22 +460,12 @@ public abstract class AbstractEndPoint extends IdleTimeout implements EndPoint
     @Override
     public String toString()
     {
-        return String.format("%s->%s", toEndPointString(), toConnectionString());
+        return String.format("%s@%x[%s]->[%s]", getClass().getSimpleName(), hashCode(), toEndPointString(), toConnectionString());
     }
 
     public String toEndPointString()
     {
-        Class<?> c = getClass();
-        String name = c.getSimpleName();
-        while (name.length() == 0 && c.getSuperclass() != null)
-        {
-            c = c.getSuperclass();
-            name = c.getSimpleName();
-        }
-
-        return String.format("%s@%h{l=%s,r=%s,%s,fill=%s,flush=%s,to=%d/%d}",
-            name,
-            this,
+        return String.format("{l=%s,r=%s,%s,fill=%s,flush=%s,to=%d/%d}",
             getLocalSocketAddress(),
             getRemoteSocketAddress(),
             _state.get(),
