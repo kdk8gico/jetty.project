@@ -168,6 +168,18 @@ public interface Callback extends Invocable
         };
     }
 
+    static Callback from(InvocationType invocationType, Runnable completed)
+    {
+        return new Completing(invocationType)
+        {
+            @Override
+            public void completed()
+            {
+                completed.run();
+            }
+        };
+    }
+
     /**
      * Creates a nested callback that runs completed after
      * completing the nested callback.
@@ -285,6 +297,18 @@ public interface Callback extends Invocable
 
     class Completing implements Callback
     {
+        private final InvocationType invocationType;
+
+        public Completing()
+        {
+            this(InvocationType.BLOCKING);
+        }
+
+        public Completing(InvocationType invocationType)
+        {
+            this.invocationType = invocationType;
+        }
+
         @Override
         public void succeeded()
         {
@@ -295,6 +319,12 @@ public interface Callback extends Invocable
         public void failed(Throwable x)
         {
             completed();
+        }
+
+        @Override
+        public InvocationType getInvocationType()
+        {
+            return invocationType;
         }
 
         public void completed()
